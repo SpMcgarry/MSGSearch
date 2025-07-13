@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Marine and Detachment Search</title>
+  <style>
+    body {
+      font-family: Verdana, sans-serif;
+      margin: 2em auto;
+      max-width: 800px;
+      background: #fff;
+      color: #000;
+    }
+    h1 {
+      text-align: center;
+      color: #003366;
+    }
+    #search-box {
+      margin: 2em auto;
+      text-align: center;
+    }
+    #search-input {
+      width: 80%;
+      padding: 0.6em;
+      font-size: 1em;
+      border: 1px solid #888;
+    }
+    #search-results {
+      max-height: 300px;
+      overflow-y: auto;
+      background: #f9f9f9;
+      border: 1px solid #ccc;
+      width: 80%;
+      margin: 0 auto;
+      display: none;
+      position: relative;
+    }
+    #search-results a {
+      display: block;
+      padding: 0.5em;
+      text-decoration: none;
+      color: #003366;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    #search-results a:hover {
+      background-color: #eef;
+    }
+  </style>
+</head>
+<body>
+  <h1>Marine and Detachment Search</h1>
+  <div id="search-box">
+    <input type="text" id="search-input" placeholder="Search by name or detachment..." oninput="searchPeople()">
+    <div id="search-results"></div>
+  </div>
+
+  <script>
+    let peopleIndex = [];
+
+    fetch('people_index.json')
+      .then(res => res.json())
+      .then(data => peopleIndex = data);
+
+    function searchPeople() {
+      const query = document.getElementById('search-input').value.toLowerCase();
+      const resultsBox = document.getElementById('search-results');
+      resultsBox.innerHTML = '';
+      if (!query || query.length < 2) {
+        resultsBox.style.display = 'none';
+        return;
+      }
+      const matches = peopleIndex.filter(p =>
+        p.name.toLowerCase().includes(query) ||
+        p.location.toLowerCase().includes(query) ||
+        p.detachment_date.toLowerCase().includes(query)
+      );
+      if (matches.length === 0) {
+        resultsBox.innerHTML = '<div style="padding:1em; color:#666;">No results found</div>';
+        resultsBox.style.display = 'block';
+        return;
+      }
+      matches.forEach(p => {
+        const result = document.createElement('a');
+        result.href = p.link;
+        result.target = '_blank';
+        result.textContent = `${p.name} — ${p.location} (${p.detachment_date})`;
+        resultsBox.appendChild(result);
+      });
+      resultsBox.style.display = 'block';
+    }
+  </script>
+</body>
+</html>
