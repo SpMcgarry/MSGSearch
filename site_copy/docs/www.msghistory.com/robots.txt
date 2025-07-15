@@ -1,4 +1,0 @@
-Sitemap: https://www.msghistory.com/sitemap.xml
-
-User-agent: *
-Disallow:
